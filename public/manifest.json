@@ -1,0 +1,18 @@
+{
+  "name": "Салон Красоты",
+  "short_name": "Салон",
+  "description": "Запись в салон красоты — услуги, мастера, расписание",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#fff5f5",
+  "theme_color": "#f43f5e",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "/icons/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}
