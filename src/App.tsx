@@ -12,6 +12,8 @@ function App() {
   const [services, setServices] = useState<Service[]>(getServices());
   const [masters, setMasters] = useState<Master[]>(getMasters());
   const [bookings, setBookings] = useState<Booking[]>(getBookings());
+  const [installPrompt, setInstallPrompt] = useState<any>(null);
+  const [isInstalled, setIsInstalled] = useState(false);
 
   // Booking flow state
   const [selectedService, setSelectedService] = useState<Service | null>(null);
@@ -24,7 +26,32 @@ function App() {
 
   useEffect(() => {
     startReminderCheck();
+
+    // PWA install prompt
+    const handler = (e: any) => {
+      e.preventDefault();
+      setInstallPrompt(e);
+    };
+    window.addEventListener('beforeinstallprompt', handler);
+
+    // Check if already installed
+    if (window.matchMedia('(display-mode: standalone)').matches) {
+      setIsInstalled(true);
+    }
+
+    return () => window.removeEventListener('beforeinstallprompt', handler);
   }, []);
+
+  const handleInstall = async () => {
+    if (installPrompt) {
+      installPrompt.prompt();
+      const { outcome } = await installPrompt.userChoice;
+      if (outcome === 'accepted') {
+        setIsInstalled(true);
+      }
+      setInstallPrompt(null);
+    }
+  };
 
   const refreshData = () => {
     setServices(getServices());
@@ -99,6 +126,22 @@ function App() {
             <div className="ml-auto text-gray-400">→</div>
           </button>
         </div>
+
+        {/* Install PWA button */}
+        {installPrompt && !isInstalled && (
+          <div className="mt-6">
+            <button
+              onClick={handleInstall}
+              className="w-full bg-gradient-to-r from-rose-500 to-pink-500 text-white rounded-2xl p-4 font-semibold shadow-lg shadow-rose-200 flex items-center justify-center gap-2 hover:from-rose-600 hover:to-pink-600 transition-all"
+            >
+              <span className="text-xl">📲</span>
+              Установить на телефон
+            </button>
+            <p className="text-center text-xs text-gray-400 mt-2">
+              Работает офлайн, как обычное приложение
+            </p>
+          </div>
+        )}
       </div>
     </div>
   );
